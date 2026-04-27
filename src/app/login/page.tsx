@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
-export default function LoginPage() {
+// Inner component that uses useSearchParams — must be wrapped in <Suspense>
+function LoginForm() {
   const params = useSearchParams();
   const from = params.get("from") || "/proposals";
 
@@ -130,5 +131,18 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+// Suspense wrapper required by Next.js 15 for any component using useSearchParams
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="auth-bg">
+        <Loader2 size={24} className="animate-spin" style={{ color: "var(--fg-muted)" }} />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
