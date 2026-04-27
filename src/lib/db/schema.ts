@@ -189,6 +189,13 @@ export const feedbackRelations = relations(feedback, ({ one }) => ({
   }),
 }));
 
+export const learningLogsRelations = relations(learningLogs, ({ one }) => ({
+  proposal: one(proposals, {
+    fields: [learningLogs.proposalId],
+    references: [proposals.id],
+  }),
+}));
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type User = typeof users.$inferSelect;

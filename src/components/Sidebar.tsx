@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Loader2,
   Shield,
+  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useTheme } from "./ThemeProvider";
@@ -28,6 +29,7 @@ interface SidebarProps {
 const NAV = [
   { href: "/", label: "New Proposal", icon: FilePlus2, exact: true },
   { href: "/proposals", label: "My Proposals", icon: FolderOpen },
+  { href: "/info", label: "Info", icon: Info },
 ];
 
 const ADMIN_NAV = [
