@@ -257,7 +257,7 @@ export default function SectionEditorPage() {
   return (
     <div className="max-w-5xl mx-auto py-8 px-4">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+      <div className="flex items-center gap-2 text-sm mb-6" style={{ color: "var(--fg-muted)" }}>
         <Link href={`/proposals/${proposalId}`} className="hover:text-foreground flex items-center gap-1">
           <ChevronLeft size={14} />
           Back to proposal
@@ -299,7 +299,8 @@ export default function SectionEditorPage() {
               onClick={generate}
               disabled={isLoading}
               title="Discard and regenerate from scratch"
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border rounded-lg px-3 py-1.5 transition-colors disabled:opacity-40"
+              className="flex items-center gap-1.5 text-xs rounded-lg px-3 py-1.5 transition-colors disabled:opacity-40"
+              style={{ color: "var(--fg-muted)", border: "1px solid var(--border)" }}
             >
               <RotateCcw size={13} />
               Regenerate
@@ -321,31 +322,29 @@ export default function SectionEditorPage() {
       </div>
 
       {/* Main editor */}
-      <div className="border rounded-xl overflow-hidden bg-white shadow-sm mb-4">
+      <div className="rounded-xl overflow-hidden mb-4" style={{ border: "1px solid var(--border)", background: "var(--surface-1)" }}>
 
         {/* Tab bar */}
-        <div className="flex items-center justify-between px-4 py-2 border-b bg-gray-50">
+        <div className="flex items-center justify-between px-4 py-2" style={{ borderBottom: "1px solid var(--border)", background: "var(--surface-2)" }}>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setViewMode("preview")}
-              className={cn(
-                "flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md transition-colors",
-                viewMode === "preview"
-                  ? "bg-white text-gray-900 shadow-sm border"
-                  : "text-gray-500 hover:text-gray-800"
-              )}
+              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
+              style={viewMode === "preview"
+                ? { background: "var(--surface-1)", color: "var(--fg)", border: "1px solid var(--border)", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }
+                : { color: "var(--fg-muted)" }
+              }
             >
               <Eye size={12} />
               Preview
             </button>
             <button
               onClick={() => setViewMode("edit")}
-              className={cn(
-                "flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md transition-colors",
-                viewMode === "edit"
-                  ? "bg-white text-gray-900 shadow-sm border"
-                  : "text-gray-500 hover:text-gray-800"
-              )}
+              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
+              style={viewMode === "edit"
+                ? { background: "var(--surface-1)", color: "var(--fg)", border: "1px solid var(--border)", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }
+                : { color: "var(--fg-muted)" }
+              }
             >
               <Pencil size={12} />
               Edit (raw)
@@ -356,7 +355,8 @@ export default function SectionEditorPage() {
           {viewMode === "preview" && content && !generating && (
             <button
               onClick={copyToClipboard}
-              className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 border rounded-md px-2.5 py-1.5 transition-colors bg-white"
+              className="flex items-center gap-1.5 text-xs rounded-md px-2.5 py-1.5 transition-colors"
+              style={{ color: "var(--fg-muted)", border: "1px solid var(--border)", background: "var(--surface-1)" }}
               title="Copy as formatted HTML (paste directly into Word)"
             >
               {copied ? (
@@ -387,7 +387,7 @@ export default function SectionEditorPage() {
             {content ? (
               generating ? (
                 // While streaming: plain pre-wrap text — no markdown parsing to avoid freezing
-                <pre className="whitespace-pre-wrap text-sm leading-relaxed font-sans text-gray-800">
+                <pre className="whitespace-pre-wrap text-sm leading-relaxed font-sans" style={{ color: "var(--fg)" }}>
                   {content}
                 </pre>
               ) : (
@@ -395,7 +395,7 @@ export default function SectionEditorPage() {
                 <MarkdownPreview content={content} />
               )
             ) : !generating ? (
-              <p className="text-sm text-gray-400 italic">Content will appear here after generation.</p>
+              <p className="text-sm italic" style={{ color: "var(--fg-muted)" }}>Content will appear here after generation.</p>
             ) : null}
           </div>
         )}
@@ -424,8 +424,8 @@ export default function SectionEditorPage() {
 
       {/* Feedback */}
       {section && section.status !== "approved" && (
-        <div className="border rounded-xl p-4 bg-gray-50">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="rounded-xl p-4" style={{ border: "1px solid var(--border)", background: "var(--surface-2)" }}>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--fg)" }}>
             Feedback for Clawbot
           </label>
           <textarea
@@ -433,10 +433,11 @@ export default function SectionEditorPage() {
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="e.g. Make the tone more technical. Add more detail about SLA response times. Shorten the intro."
             rows={3}
-            className="w-full border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={{ border: "1px solid var(--border)", background: "var(--surface-1)", color: "var(--fg)" }}
           />
           <div className="mt-2 flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs" style={{ color: "var(--fg-muted)" }}>
               {section.revisionCount > 0
                 ? `${section.revisionCount} revision(s) so far`
                 : "No revisions yet"}

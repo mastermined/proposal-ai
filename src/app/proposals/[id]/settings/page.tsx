@@ -67,6 +67,40 @@ function typeColor(t: string | null) {
   return "bg-gray-100 text-gray-500";
 }
 
+// Reusable card section
+function Card({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <section
+      className={cn("rounded-xl mb-5 overflow-hidden", className)}
+      style={{ border: "1px solid var(--border)", background: "var(--surface-1)" }}
+    >
+      {children}
+    </section>
+  );
+}
+
+function CardHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="px-5 py-4 flex items-center justify-between"
+      style={{ borderBottom: "1px solid var(--border)" }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function CardRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="flex items-center justify-between px-5 py-3.5 text-sm"
+      style={{ borderBottom: "1px solid var(--border)" }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function ProposalSettingsPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -75,23 +109,18 @@ export default function ProposalSettingsPage() {
   const [proposal, setProposal] = useState<ProposalDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Name editing
   const [nameDraft, setNameDraft] = useState("");
   const [editingName, setEditingName] = useState(false);
   const [savingName, setSavingName] = useState(false);
 
-  // File upload
   const [addingFiles, setAddingFiles] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [dragging, setDragging] = useState(false);
   const addFileRef = useRef<HTMLInputElement>(null);
 
-  // Delete
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  // ── Load proposal details ─────────────────────────────────────────────────
 
   useEffect(() => {
     fetch(`/api/proposals/${proposalId}/details`)
@@ -102,8 +131,6 @@ export default function ProposalSettingsPage() {
       })
       .finally(() => setLoading(false));
   }, [proposalId]);
-
-  // ── Name save ─────────────────────────────────────────────────────────────
 
   const saveName = async () => {
     const trimmed = nameDraft.trim();
@@ -122,8 +149,6 @@ export default function ProposalSettingsPage() {
     }
   };
 
-  // ── Add more files ────────────────────────────────────────────────────────
-
   const handleAddFiles = async (incoming: FileList | null) => {
     if (!incoming || incoming.length === 0 || !proposal) return;
     const newFiles = Array.from(incoming);
@@ -133,7 +158,7 @@ export default function ProposalSettingsPage() {
     const formData = new FormData();
     for (const f of newFiles) formData.append("files", f);
     formData.append("name", proposal.name || proposal.rfpFilename);
-    formData.append("proposalId", proposalId); // signal to re-analyze existing proposal
+    formData.append("proposalId", proposalId);
 
     try {
       const res = await fetch(`/api/proposals/${proposalId}/add-documents`, {
@@ -144,7 +169,6 @@ export default function ProposalSettingsPage() {
       if (!res.ok) {
         setUploadError(data.error || "Upload failed");
       } else {
-        // Refresh proposal details
         const refreshed = await fetch(`/api/proposals/${proposalId}/details`).then(r => r.json());
         setProposal(refreshed);
         setAddingFiles(false);
@@ -156,8 +180,6 @@ export default function ProposalSettingsPage() {
     }
   };
 
-  // ── Delete proposal ───────────────────────────────────────────────────────
-
   const handleDelete = async () => {
     setDeleting(true);
     try {
@@ -167,8 +189,6 @@ export default function ProposalSettingsPage() {
       setDeleting(false);
     }
   };
-
-  // ── Render ────────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -180,7 +200,7 @@ export default function ProposalSettingsPage() {
 
   if (!proposal) {
     return (
-      <div className="max-w-2xl mx-auto py-16 px-4 text-center text-gray-500">
+      <div className="max-w-2xl mx-auto py-16 px-4 text-center" style={{ color: "var(--fg-muted)" }}>
         Proposal not found.
       </div>
     );
@@ -193,10 +213,10 @@ export default function ProposalSettingsPage() {
     <div className="max-w-2xl mx-auto py-10 px-4">
 
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+      <div className="flex items-center gap-2 text-sm mb-8" style={{ color: "var(--fg-muted)" }}>
         <Link
           href={`/proposals/${proposalId}`}
-          className="flex items-center gap-1 hover:text-foreground transition-colors"
+          className="flex items-center gap-1 transition-colors hover:text-[var(--accent)]"
         >
           <ChevronLeft size={15} />
           Back to proposal
@@ -207,16 +227,18 @@ export default function ProposalSettingsPage() {
         <span>Settings</span>
       </div>
 
-      <h1 className="text-xl font-bold text-gray-900 mb-8">Proposal Settings</h1>
+      <h1 className="text-xl font-bold mb-8" style={{ color: "var(--accent)" }}>
+        Proposal Settings
+      </h1>
 
-      {/* ── Section: Name ─────────────────────────────────────────────────── */}
-      <section className="border rounded-xl bg-white shadow-sm mb-5">
-        <div className="px-5 py-4 border-b">
-          <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-            <Tag size={15} className="text-fpt" />
+      {/* ── Project Name ─────────────────────────────────────────── */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--fg)" }}>
+            <Tag size={15} style={{ color: "var(--accent)" }} />
             Project Name
           </div>
-        </div>
+        </CardHeader>
         <div className="px-5 py-4">
           {editingName ? (
             <div className="flex items-center gap-2">
@@ -228,56 +250,59 @@ export default function ProposalSettingsPage() {
                   if (e.key === "Enter") saveName();
                   if (e.key === "Escape") setEditingName(false);
                 }}
-                className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fpt"
+                className="flex-1 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                style={{ border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--fg)" }}
                 disabled={savingName}
                 placeholder="e.g. Petronas Quality+ 2025"
               />
               <button
                 onClick={saveName}
                 disabled={savingName}
-                className="p-2 bg-fpt text-white rounded-lg hover:bg-fpt-hover disabled:opacity-50 transition-colors"
+                className="p-2 text-white rounded-lg transition-colors disabled:opacity-50"
+                style={{ background: "var(--accent)" }}
               >
                 {savingName ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />}
               </button>
               <button
                 onClick={() => setEditingName(false)}
-                className="p-2 border rounded-lg text-gray-500 hover:text-gray-800 transition-colors"
+                className="p-2 rounded-lg transition-colors"
+                style={{ border: "1px solid var(--border)", color: "var(--fg-muted)" }}
               >
                 <X size={15} />
               </button>
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <p className="text-base font-medium text-gray-900">{displayName}</p>
+              <p className="text-base font-medium" style={{ color: "var(--fg)" }}>{displayName}</p>
               <button
                 onClick={() => setEditingName(true)}
-                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-fpt border rounded-lg px-3 py-1.5 transition-colors"
+                className="flex items-center gap-1.5 text-xs rounded-lg px-3 py-1.5 transition-colors hover:text-[var(--accent)]"
+                style={{ border: "1px solid var(--border)", color: "var(--fg-muted)" }}
               >
                 <Pencil size={12} />
                 Rename
               </button>
             </div>
           )}
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-xs mt-2" style={{ color: "var(--fg-muted)" }}>
             This name appears in your proposals list and is used for export filenames.
           </p>
         </div>
-      </section>
+      </Card>
 
-      {/* ── Section: Source Documents ──────────────────────────────────────── */}
-      <section className="border rounded-xl bg-white shadow-sm mb-5">
-        <div className="px-5 py-4 border-b flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-            <FileText size={15} className="text-fpt" />
+      {/* ── Source Documents ──────────────────────────────────────── */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--fg)" }}>
+            <FileText size={15} style={{ color: "var(--accent)" }} />
             Source Documents
           </div>
-          <span className="text-xs text-muted-foreground">{files.length} file{files.length !== 1 ? "s" : ""}</span>
-        </div>
+          <span className="text-xs" style={{ color: "var(--fg-muted)" }}>{files.length} file{files.length !== 1 ? "s" : ""}</span>
+        </CardHeader>
 
-        {/* File list */}
-        <div className="divide-y">
+        <div>
           {files.map((f, i) => (
-            <div key={i} className="flex items-center gap-3 px-5 py-3.5">
+            <div key={i} className="flex items-center gap-3 px-5 py-3.5" style={{ borderBottom: "1px solid var(--border)" }}>
               <div className={cn(
                 "shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold",
                 f.type === "pdf" ? "bg-red-50 text-red-500" : "bg-fpt-muted text-fpt"
@@ -285,22 +310,23 @@ export default function ProposalSettingsPage() {
                 {f.type === "pdf" ? "PDF" : "DOC"}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">{f.name}</p>
+                <p className="text-sm font-medium truncate" style={{ color: "var(--fg)" }}>{f.name}</p>
                 {f.size > 0 && (
-                  <p className="text-xs text-muted-foreground">{formatBytes(f.size)}</p>
+                  <p className="text-xs" style={{ color: "var(--fg-muted)" }}>{formatBytes(f.size)}</p>
                 )}
               </div>
-              <File size={15} className="shrink-0 text-gray-300" />
+              <File size={15} className="shrink-0" style={{ color: "var(--border-2)" }} />
             </div>
           ))}
         </div>
 
         {/* Add documents */}
-        <div className="px-5 py-4 border-t bg-gray-50 rounded-b-xl">
+        <div className="px-5 py-4 rounded-b-xl" style={{ background: "var(--surface-2)" }}>
           {!addingFiles ? (
             <button
               onClick={() => setAddingFiles(true)}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-fpt transition-colors"
+              className="flex items-center gap-2 text-sm transition-colors hover:text-[var(--accent)]"
+              style={{ color: "var(--fg-muted)" }}
             >
               <Plus size={15} />
               Add documents (addendum, SOW, clarifications…)
@@ -312,10 +338,11 @@ export default function ProposalSettingsPage() {
                 onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={(e) => { e.preventDefault(); setDragging(false); handleAddFiles(e.dataTransfer.files); }}
-                className={cn(
-                  "flex flex-col items-center gap-2 py-6 border-2 border-dashed rounded-xl cursor-pointer transition-all",
-                  dragging ? "border-fpt bg-fpt-muted" : "border-gray-200 hover:border-fpt/30 hover:bg-gray-50"
-                )}
+                className="flex flex-col items-center gap-2 py-6 border-2 border-dashed rounded-xl cursor-pointer transition-all"
+                style={{
+                  borderColor: dragging ? "var(--accent)" : "var(--border-2)",
+                  background: dragging ? "var(--accent-muted)" : "transparent",
+                }}
               >
                 <input
                   id="add-docs"
@@ -328,71 +355,91 @@ export default function ProposalSettingsPage() {
                   disabled={uploading}
                 />
                 {uploading ? (
-                  <><Loader2 size={22} className="text-fpt animate-spin" /><p className="text-sm text-fpt">Processing documents…</p></>
+                  <>
+                    <Loader2 size={22} className="animate-spin" style={{ color: "var(--accent)" }} />
+                    <p className="text-sm" style={{ color: "var(--accent)" }}>Processing documents…</p>
+                  </>
                 ) : (
-                  <><UploadCloud size={22} className="text-gray-400" /><p className="text-sm text-gray-500">Drop files here or click to browse</p><p className="text-xs text-gray-400">PDF or DOCX · Added documents will be merged into the RFP context</p></>
+                  <>
+                    <UploadCloud size={22} style={{ color: "var(--fg-muted)" }} />
+                    <p className="text-sm" style={{ color: "var(--fg-muted)" }}>Drop files here or click to browse</p>
+                    <p className="text-xs" style={{ color: "var(--fg-muted)" }}>PDF or DOCX · Added documents will be merged into the RFP context</p>
+                  </>
                 )}
               </label>
               {uploadError && (
                 <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{uploadError}</p>
               )}
               <div className="flex justify-end">
-                <button onClick={() => { setAddingFiles(false); setUploadError(""); }} className="text-xs text-muted-foreground hover:text-gray-700">Cancel</button>
+                <button
+                  onClick={() => { setAddingFiles(false); setUploadError(""); }}
+                  className="text-xs transition-colors hover:text-[var(--fg)]"
+                  style={{ color: "var(--fg-muted)" }}
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           )}
         </div>
-      </section>
+      </Card>
 
-      {/* ── Section: Proposal Info ─────────────────────────────────────────── */}
-      <section className="border rounded-xl bg-white shadow-sm mb-5">
-        <div className="px-5 py-4 border-b">
-          <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-            <Cpu size={15} className="text-fpt" />
+      {/* ── Proposal Info ─────────────────────────────────────────── */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--fg)" }}>
+            <Cpu size={15} style={{ color: "var(--accent)" }} />
             Proposal Info
           </div>
-        </div>
-        <div className="divide-y text-sm">
-          <div className="flex items-center justify-between px-5 py-3.5">
-            <span className="text-muted-foreground">Engagement type</span>
+        </CardHeader>
+        <div>
+          <CardRow>
+            <span style={{ color: "var(--fg-muted)" }}>Engagement type</span>
             <span className={cn("px-2.5 py-0.5 rounded-full text-xs font-medium", typeColor(proposal.proposalType))}>
               {typeLabel(proposal.proposalType)}
             </span>
-          </div>
-          <div className="flex items-center justify-between px-5 py-3.5">
-            <span className="text-muted-foreground">Status</span>
-            <span className="capitalize font-medium text-gray-700">{proposal.status.replace("_", " ")}</span>
-          </div>
-          <div className="flex items-center justify-between px-5 py-3.5">
-            <span className="text-muted-foreground flex items-center gap-1.5"><Calendar size={13} />Created</span>
-            <span className="text-gray-700">{formatDate(proposal.createdAt)}</span>
-          </div>
+          </CardRow>
+          <CardRow>
+            <span style={{ color: "var(--fg-muted)" }}>Status</span>
+            <span className="capitalize font-medium" style={{ color: "var(--fg)" }}>
+              {proposal.status.replace("_", " ")}
+            </span>
+          </CardRow>
+          <CardRow>
+            <span className="flex items-center gap-1.5" style={{ color: "var(--fg-muted)" }}>
+              <Calendar size={13} />Created
+            </span>
+            <span style={{ color: "var(--fg)" }}>{formatDate(proposal.createdAt)}</span>
+          </CardRow>
           {proposal.llmProvider && (
-            <div className="flex items-center justify-between px-5 py-3.5">
-              <span className="text-muted-foreground">LLM used</span>
-              <span className="text-gray-700 font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+            <div className="flex items-center justify-between px-5 py-3.5 text-sm">
+              <span style={{ color: "var(--fg-muted)" }}>LLM used</span>
+              <span className="font-mono text-xs px-2 py-1 rounded" style={{ background: "var(--surface-2)", color: "var(--fg)" }}>
                 {proposal.llmProvider.model}
               </span>
             </div>
           )}
         </div>
-      </section>
+      </Card>
 
-      {/* ── Section: Danger Zone ───────────────────────────────────────────── */}
-      <section className="border border-red-200 rounded-xl bg-white shadow-sm">
-        <div className="px-5 py-4 border-b border-red-200">
-          <p className="text-sm font-semibold text-red-600">Danger Zone</p>
+      {/* ── Danger Zone ───────────────────────────────────────────── */}
+      <section
+        className="rounded-xl overflow-hidden"
+        style={{ border: "1px solid var(--red, #ef4444)", background: "var(--surface-1)" }}
+      >
+        <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(239,68,68,0.3)" }}>
+          <p className="text-sm font-semibold text-red-500">Danger Zone</p>
         </div>
         <div className="px-5 py-4 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-800">Delete this proposal</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-sm font-medium" style={{ color: "var(--fg)" }}>Delete this proposal</p>
+            <p className="text-xs mt-0.5" style={{ color: "var(--fg-muted)" }}>
               Permanently deletes all sections, feedback, and generated content. This cannot be undone.
             </p>
           </div>
           {confirmDelete ? (
             <div className="flex items-center gap-2 shrink-0 ml-4">
-              <span className="text-xs text-red-600 font-medium">Are you sure?</span>
+              <span className="text-xs text-red-500 font-medium">Are you sure?</span>
               <button
                 onClick={handleDelete}
                 disabled={deleting}
@@ -401,12 +448,19 @@ export default function ProposalSettingsPage() {
                 {deleting ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
                 Delete
               </button>
-              <button onClick={() => setConfirmDelete(false)} className="text-xs text-gray-400 hover:text-gray-700 px-2">Cancel</button>
+              <button
+                onClick={() => setConfirmDelete(false)}
+                className="text-xs px-2 transition-colors"
+                style={{ color: "var(--fg-muted)" }}
+              >
+                Cancel
+              </button>
             </div>
           ) : (
             <button
               onClick={() => setConfirmDelete(true)}
-              className="shrink-0 ml-4 flex items-center gap-1.5 text-xs text-red-600 hover:text-red-700 border border-red-200 hover:border-red-400 px-3 py-1.5 rounded-lg transition-colors"
+              className="shrink-0 ml-4 flex items-center gap-1.5 text-xs text-red-500 hover:text-red-600 px-3 py-1.5 rounded-lg transition-colors"
+              style={{ border: "1px solid rgba(239,68,68,0.4)" }}
             >
               <Trash2 size={13} />
               Delete

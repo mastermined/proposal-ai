@@ -58,7 +58,7 @@ export default async function ProposalDashboard({
 
       {/* Progress bar */}
       <div className="mb-8">
-        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--surface-3)" }}>
           <div
             className="h-full bg-blue-500 rounded-full transition-all duration-500"
             style={{ width: `${(approvedCount / 10) * 100}%` }}
@@ -81,7 +81,8 @@ export default async function ProposalDashboard({
         )}
         <Link
           href={`/proposals/${id}/settings`}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-gray-800 border rounded-lg px-3 py-1.5 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm rounded-lg px-3 py-1.5 transition-colors"
+          style={{ color: "var(--fg-muted)", border: "1px solid var(--border)" }}
         >
           <Settings size={14} />
           Settings

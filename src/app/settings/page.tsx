@@ -105,7 +105,7 @@ export default function SettingsPage() {
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
       <h1 className="text-2xl font-bold mb-1">LLM Provider Settings</h1>
-      <p className="text-muted-foreground mb-8 text-sm">
+      <p className="mb-8 text-sm" style={{ color: "var(--fg-muted)" }}>
         Configure which AI model powers Clawbot and Hermes. Switch providers any time — existing proposals keep their original provider.
       </p>
 
@@ -120,7 +120,7 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="border rounded-xl p-6 space-y-5 bg-white shadow-sm">
+      <div className="rounded-xl p-6 space-y-5" style={{ background: "var(--surface-1)", border: "1px solid var(--border)" }}>
         {/* Provider type */}
         <div>
           <label className="block text-sm font-medium mb-2">Provider</label>
@@ -132,11 +132,15 @@ export default function SettingsPage() {
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-lg border text-left transition-all text-sm",
                   provider === opt.value
-                    ? "border-fpt bg-fpt-muted text-blue-700 font-medium"
-                    : "border-gray-200 hover:border-gray-300 text-gray-700"
+                    ? "border-fpt bg-fpt-muted font-medium"
+                    : ""
                 )}
+                style={provider === opt.value
+                  ? { color: "var(--accent)" }
+                  : { borderColor: "var(--border)", color: "var(--fg)" }
+                }
               >
-                <Cpu size={16} className={provider === opt.value ? "text-fpt" : "text-gray-400"} />
+                <Cpu size={16} style={{ color: provider === opt.value ? "var(--accent)" : "var(--fg-muted)" }} />
                 {opt.label}
               </button>
             ))}
@@ -150,7 +154,8 @@ export default function SettingsPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Work Claude"
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fpt"
+            className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fpt"
+            style={{ border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--fg)" }}
           />
         </div>
 
@@ -161,9 +166,10 @@ export default function SettingsPage() {
             value={model}
             onChange={(e) => setModel(e.target.value)}
             placeholder={DEFAULT_MODELS[provider]}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fpt"
+            className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fpt"
+            style={{ border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--fg)" }}
           />
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs mt-1" style={{ color: "var(--fg-muted)" }}>
             {provider === "ollama" ? "Must be a model you have pulled locally (e.g. llama3, mistral, phi3)" :
              provider === "anthropic" ? "e.g. claude-sonnet-4-6, claude-opus-4-6, claude-haiku-4-5-20251001" :
              provider === "openai" ? "e.g. gpt-4o, gpt-4-turbo, gpt-3.5-turbo" :
@@ -181,10 +187,11 @@ export default function SettingsPage() {
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
               placeholder={DEFAULT_URLS[provider] ?? "https://your-endpoint.com/v1"}
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fpt"
+              className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fpt"
+              style={{ border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--fg)" }}
             />
             {provider === "ollama" && (
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs mt-1" style={{ color: "var(--fg-muted)" }}>
                 Default: http://localhost:11434 — change for LAN-hosted Ollama
               </p>
             )}
@@ -202,9 +209,10 @@ export default function SettingsPage() {
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder={active?.hasApiKey ? "••••••••••••••••" : "sk-..."}
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fpt"
+              className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fpt"
+              style={{ border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--fg)" }}
             />
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs mt-1" style={{ color: "var(--fg-muted)" }}>
               Encrypted with AES-256 before storage. Never returned to the browser.
             </p>
           </div>

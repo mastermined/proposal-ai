@@ -29,7 +29,7 @@ function typeColor(type: string | null) {
   if (type === "r_and_m") return "bg-blue-100 text-blue-700";
   if (type === "enhancement") return "bg-purple-100 text-purple-700";
   if (type === "hybrid") return "bg-teal-100 text-teal-700";
-  return "bg-gray-100 text-gray-500";
+  return "";
 }
 
 function statusColor(status: string) {
@@ -142,7 +142,10 @@ export default async function ProposalsListPage() {
                       {proposal.name || proposal.rfpFilename}
                     </p>
                     {proposal.proposalType && (
-                      <span className={cn("shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium", typeColor(proposal.proposalType))}>
+                      <span
+                        className={cn("shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium", typeColor(proposal.proposalType))}
+                        style={!proposal.proposalType ? { background: "var(--surface-3)", color: "var(--fg-muted)" } : undefined}
+                      >
                         {typeLabel(proposal.proposalType)}
                       </span>
                     )}
