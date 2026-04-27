@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "src/app/api/analyze/route.ts": { "maxDuration": 60 },
+    "src/app/api/generate-section/route.ts": { "maxDuration": 60 },
+    "src/app/api/revise/route.ts": { "maxDuration": 60 },
+    "src/app/api/proposals/[id]/add-documents/route.ts": { "maxDuration": 60 },
+    "src/app/api/export/route.ts": { "maxDuration": 30 },
+    "src/app/api/upload/route.ts": { "maxDuration": 30 }
+  }
+}
