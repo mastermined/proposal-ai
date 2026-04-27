@@ -82,7 +82,7 @@ export function Sidebar({ userRole, userName, userEmail }: SidebarProps) {
         </div>
         <div>
           <p className="sidebar-logo-name">Proposal AI</p>
-          <p className="sidebar-logo-sub">by FPT Software</p>
+          <p className="sidebar-logo-sub">by Adnan from FPT Software</p>
         </div>
       </div>
 
